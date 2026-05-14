@@ -1,104 +1,175 @@
-from flask import Flask, render_template, redirect
-import sqlite3
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EliteShop | Modern Shopping Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #10b981;
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
 
-app = Flask(__name__)
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
 
+        nav {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
 
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
 
-def get_db():
-return sqlite3.connect("database.db")
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
 
+        .nav-links a:hover {
+            color: var(--primary);
+        }
 
+        main {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
 
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
 
-@app.route("/")
-def index():
-db = get_db()
-products = db.execute("SELECT * FROM products").fetchall()
-return render_template("index.html", products=products)
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
 
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
 
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
 
+        .product-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
 
-@app.route("/add/<int:product_id>")
-def add_to_cart(product_id):
-db = get_db()
-db.execute(
-"INSERT INTO cart(product_id) VALUES (?)",
-(product_id,)
-)
-db.commit()
-return redirect("/")
+        .product-price {
+            font-size: 1.1rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
 
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            text-align: center;
+        }
 
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: scale(1.02);
+        }
 
+        .cart-list {
+            list-style: none;
+        }
 
-@app.route("/cart")
-def cart():
-db = get_db()
-items = db.execute("""
-SELECT p.name, p.price
-FROM cart c
-JOIN products p ON c.product_id = p.id
-""").fetchall()
-return render_template("cart.html", items=items)
+        .cart-item {
+            background: var(--card-bg);
+            margin-bottom: 1rem;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
+        footer {
+            margin-top: auto;
+            padding: 3rem 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">EliteShop</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/cart">Cart</a>
+        </div>
+    </nav>
 
+    <main>
+        {% block content %}{% endblock %}
+    </main>
 
-
-if __name__ == "__main__":
-app.run(host="0.0.0.0", port=5000)
-from flask import Flask, render_template, redirect
-import sqlite3
-
-
-app = Flask(__name__)
-
-
-
-
-def get_db():
-return sqlite3.connect("database.db")
-
-
-
-
-@app.route("/")
-def index():
-db = get_db()
-products = db.execute("SELECT * FROM products").fetchall()
-return render_template("index.html", products=products)
-
-
-
-
-@app.route("/add/<int:product_id>")
-def add_to_cart(product_id):
-db = get_db()
-db.execute(
-"INSERT INTO cart(product_id) VALUES (?)",
-(product_id,)
-)
-db.commit()
-return redirect("/")
-
-
-
-
-@app.route("/cart")
-def cart():
-db = get_db()
-items = db.execute("""
-SELECT p.name, p.price
-FROM cart c
-JOIN products p ON c.product_id = p.id
-""").fetchall()
-return render_template("cart.html", items=items)
-
-
-
-
-if __name__ == "__main__":
-app.run(host="0.0.0.0", port=5000)
+    <footer>
+        &copy; 2026 EliteShop. Designed for excellence.
+    </footer>
+</body>
+</html>

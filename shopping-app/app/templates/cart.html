@@ -1,8 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
-<ul>
+<h1>Your Shopping Cart</h1>
+<ul class="cart-list">
 {% for item in items %}
-<li>{{ item[0] }} - ${{ item[1] }}</li>
+    <li class="cart-item">
+        <span class="product-name">{{ item[0] }}</span>
+        <span class="product-price">${{ item[1] }}</span>
+    </li>
+{% else %}
+    <li class="cart-item">Your cart is empty.</li>
 {% endfor %}
 </ul>
+<div style="margin-top: 2rem;">
+    <a href="/" class="btn" style="width: auto; padding: 0.75rem 2.5rem;">Continue Shopping</a>
+</div>
 {% endblock %}
